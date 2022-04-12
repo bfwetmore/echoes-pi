@@ -5,19 +5,36 @@ const {response} = require("express");
 const app = express();
 app.set('view engine', 'pug');
 
+let constellationArray;
+let materialsArray = getMaterials();
+let regionArray = regionFilter();
+let selectedRegion = '';
+let selectedConstellation;
+let selectedMaterials;
+let selectedResults;
+
 function regionFilter() {
     let set = new Set();
     piData.forEach((data) => {
         set.add(data.Region);
     });
-    console.log([...set].length);
     return [...set].sort();
 }
 
-function filterByRichness(richness, region, material) {
+function constellationFilter() {
+    let set = new Set();
+    piData.forEach((data) => {
+        if (data.Region === selectedRegion) {
+            set.add(data.Constellation);
+        }
+    });
+    return [...set].sort();
+}
+
+function filterByRichness(richness, region, material, constellation) {
     let set = new Set();
     piData.forEach((systemObject) => {
-        if (systemObject.Region === region && systemObject.Resource === material) {
+        if (systemObject.Region === region && systemObject.Resource === material && systemObject.Constellation === constellation) {
             for (let i = 0; i < richness.length; i++) {
                 if (systemObject.Richness === richness[i]) {
                     set.add(systemObject);
@@ -36,11 +53,7 @@ function getMaterials() {
     return [...set].sort();
 }
 
-let materialsArray = getMaterials();
-let regionArray = regionFilter();
-let selectedRegion = '';
-let selectedMaterials;
-let selectedResults;
+
 
 app.use(express.urlencoded());
 
@@ -50,17 +63,27 @@ app.get('/', (req, res) => {
 
 app.post('/', (req, res) => {
     selectedRegion = req.body.region;
-    //if (selectedRegion !== '') {
-    res.redirect('/materials');
-    // }
+    res.redirect('/constellation');
 });
+
+app.get('/constellation', (req, res)=>{
+    res.locals.region = selectedRegion
+    constellationArray = constellationFilter()
+    res.render('constellation', {constellationArray, regionArray})
+})
+
+app.post('/constellation', (req, res)=>{
+    selectedConstellation = req.body.constellation
+    res.redirect('materials')
+})
 
 app.get('/materials', (req, res) => {
     res.locals.region = selectedRegion;
+    res.locals.constellation = selectedConstellation
     if (selectedRegion === '') {
         res.redirect('/')
     }
-    res.render('materials', {regionArray, materialsArray});
+    res.render('materials', {regionArray, materialsArray, constellationArray});
 });
 
 app.post('/materials', (req, res) => {
@@ -70,20 +93,22 @@ app.post('/materials', (req, res) => {
 
 app.get('/richness', (req, res) => {
     res.locals.region = selectedRegion;
+    res.locals.constellation = selectedConstellation
     res.locals.material = selectedMaterials;
-    res.render('richness', {regionArray, materialsArray});
+    res.render('richness', {regionArray, materialsArray, constellationArray});
 });
 
 app.post('/richness', (req, res, next) => {
     let selectedRichness = Object.getOwnPropertyNames(req.body);
-    selectedResults = filterByRichness(selectedRichness, selectedRegion, selectedMaterials);
+    selectedResults = filterByRichness(selectedRichness, selectedRegion, selectedMaterials, selectedConstellation);
     res.redirect('/results');
 });
 
 app.get('/results', (req, res) => {
     res.locals.region = selectedRegion;
+    res.locals.constellation = selectedConstellation
     res.locals.material = selectedMaterials;
-    res.render('results', {regionArray, materialsArray, selectedResults});
+    res.render('results', {regionArray, materialsArray, selectedResults, constellationArray});
 });
 
 app.listen(process.env.PORT || 3000, () => {

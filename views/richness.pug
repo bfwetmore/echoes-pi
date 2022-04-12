@@ -9,6 +9,13 @@ block content
                     each val in regionArray
                         option(value=val) #{val}
 
+        h2 Select Constellation
+            form(action='/constellation', method="post", id='constellation')
+                select(name= 'constellation' onchange='this.form.submit()')
+                    option(selected=constellation) #{constellation}
+                    each val in constellationArray
+                        option(value=val) #{val}
+
         h2 Select Desired PI Material
             form(action='/materials', method="post", id='system')
                 select(name= 'piMaterial' onchange='this.form.submit()')
