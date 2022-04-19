@@ -8,22 +8,24 @@ block content
                     option(selected=region) #{region}
                     each val in regionArray
                         option(value=val) #{val}
-
+    if (region)
         h2 Select Constellation
-            form(action='/results', method="post", id='constellation')
+            form(action='/constellation', method="post", id='constellation')
                 select(name= 'constellation' onchange='this.form.submit()')
                     option(selected=constellation) #{constellation}
                     each val in constellationArray
                         option(value=val) #{val}
                     option(value='All') All
 
+    if (constellation)
         h2 Select Desired PI Material
-            form(action='/materials', method="post", id='system')
+            form(action='/materials', method="post", id='materials')
                 select(name= 'piMaterial' onchange='this.form.submit()')
                     option(selected=material) #{material}
                     each val in materialsArray
                         option(value=val) #{val}
 
+    if (material)
         h2 Select Desired Richness(s)
         form(action='/richness', method="post", id='richness', name='richness')
             input(type='checkbox' name='Poor' checked=false)
@@ -37,7 +39,7 @@ block content
             br
             button(type='submit') Submit
 
-
+    if (richness)
         h2
             | Results for &nbsp
             i(style='color:red') #{material} &nbsp

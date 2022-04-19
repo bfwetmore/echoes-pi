@@ -9,7 +9,7 @@ app.set("view engine", "pug");
 let constellationArray;
 let materialsArray = getMaterials();
 let regionArray = regionFilter();
-let selectedRegion = "";
+let selectedRegion;
 let selectedConstellation;
 let selectedMaterials;
 let results;
@@ -37,7 +37,7 @@ function filterAnyConstellation(systemObject, constellation) {
   if (selectedConstellation === "All") {
     return true;
   }
-  return systemObject.constellation === constellation;
+  return systemObject['Constellation'] === constellation;
 }
 
 function filterByRichness(richness, region, material, constellation) {
@@ -48,7 +48,7 @@ function filterByRichness(richness, region, material, constellation) {
       systemObject["Resource"] === material &&
       filterAnyConstellation(systemObject, constellation)
     ) {
-      for (let i = 0; i < richness.length; i++){
+      for (let i = 0; i < richness.length; i++) {
         if (systemObject["Richness"] === richness[i]) {
           set.add(systemObject);
         }
@@ -73,21 +73,35 @@ function getResponseLocals(res) {
   res.locals.richness = selectedRichness;
 }
 
+function renderResultsTemplate(res){
+  res.render("results", {
+    regionArray,
+    materialsArray,
+    selectedResults: results,
+    constellationArray,
+  });
+}
+
 app.use(express.urlencoded({ extended: true }));
 
 app.get("/", (req, res) => {
-  res.render("index", { regionArray });
+  res.render("results", {
+    regionArray,
+    materialsArray,
+    selectedResults: results,
+    constellationArray,
+  });
 });
 
 app.post("/", (req, res) => {
   selectedRegion = req.body.region;
-  res.redirect("/constellation");
+  res.redirect("constellation");
 });
 
 app.get("/constellation", (req, res) => {
   getResponseLocals(res);
   constellationArray = constellationFilter();
-  res.render("constellation", { constellationArray, regionArray });
+  renderResultsTemplate(res);
 });
 
 app.post("/constellation", (req, res) => {
@@ -97,10 +111,12 @@ app.post("/constellation", (req, res) => {
 
 app.get("/materials", (req, res) => {
   getResponseLocals(res);
-  if (selectedRegion === "") {
-    res.redirect("/");
-  }
-  res.render("materials", { regionArray, materialsArray, constellationArray });
+  res.render("results", {
+    regionArray,
+    materialsArray,
+    selectedResults: results,
+    constellationArray,
+  });
 });
 
 app.post("/materials", (req, res) => {
@@ -110,17 +126,17 @@ app.post("/materials", (req, res) => {
 
 app.get("/richness", (req, res) => {
   getResponseLocals(res);
-  res.render("richness", { regionArray, materialsArray, constellationArray });
+  res.render("results", {
+    regionArray,
+    materialsArray,
+    selectedResults: results,
+    constellationArray,
+  });
 });
 
 app.post("/richness", (req, res) => {
   selectedRichness = Object.getOwnPropertyNames(req.body);
-  results = filterByRichness(
-    selectedRichness,
-    selectedRegion,
-    selectedMaterials,
-    selectedConstellation
-  );
+  results = filterByRichness(selectedRichness, selectedRegion, selectedMaterials, selectedConstellation);
   results.sort((a, b) => {
     return b["Output"] - a["Output"];
   });
@@ -155,5 +171,4 @@ app.post("/results", (req, res) => {
 
 app.listen(process.env.PORT || 3000, () => {
   console.log("Server has started on Port 3000");
-  console.log(selectedRegion);
 });
