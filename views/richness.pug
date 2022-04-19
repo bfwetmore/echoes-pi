@@ -22,6 +22,7 @@ block content
                     option(selected=material) #{material}
                     each val in materialsArray
                         option(value=val) #{val}
+                    option(value='All') All
 
         h2 Select Desired Richness(s)
         form(action='/richness', method="post", id='richness', name='richness')

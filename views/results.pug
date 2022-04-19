@@ -10,11 +10,12 @@ block content
                         option(value=val) #{val}
 
         h2 Select Constellation
-            form(action='/constellation', method="post", id='constellation')
+            form(action='/results', method="post", id='constellation')
                 select(name= 'constellation' onchange='this.form.submit()')
                     option(selected=constellation) #{constellation}
                     each val in constellationArray
                         option(value=val) #{val}
+                    option(value='All') All
 
         h2 Select Desired PI Material
             form(action='/materials', method="post", id='system')
@@ -36,6 +37,7 @@ block content
             br
             button(type='submit') Submit
 
+
         h2
             | Results for &nbsp
             i(style='color:red') #{material} &nbsp
@@ -44,11 +46,13 @@ block content
         table(style='width:20%', border="1")
             tr
                 th System/Planet
+                th Constellation
                 th Richness
                 th Output
             each val in selectedResults
                 tr
                     td #{val['Planet Name']}
+                    td #{val.Constellation}
                     td #{val.Richness}
                     td #{val.Output}
 
