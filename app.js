@@ -1,14 +1,16 @@
 const express = require("express");
 let piData = require("./echoesPI.json");
 const cookieParser = require("cookie-parser");
+
 const app = express();
 
 app.use(cookieParser());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.set("view engine", "pug");
 
+let materialsArray = materialFilter();
 let constellationArray;
-let materialsArray = getMaterials();
 let regionArray = regionFilter();
 let selectedRegion;
 let selectedConstellation;
@@ -16,6 +18,10 @@ let selectedMaterials;
 let results;
 let selectedRichness;
 
+/**
+ * Filters for a list of Regions
+ * @returns {array}
+ */
 function regionFilter() {
   let set = new Set();
   piData.forEach((planetObject) => {
@@ -24,6 +30,10 @@ function regionFilter() {
   return [...set].sort();
 }
 
+/**
+ * Filters for a list of Constellations
+ * @returns {array}
+ */
 function constellationFilter() {
   let set = new Set();
   piData.forEach((planetObject) => {
@@ -34,20 +44,33 @@ function constellationFilter() {
   return [...set].sort();
 }
 
-function filterAnyConstellation(systemObject, constellation) {
-  if (selectedConstellation === "All") {
-    return true;
-  }
-  return systemObject["Constellation"] === constellation;
+/**
+ * Filters for a list of Materials
+ * @returns {array}
+ */
+function materialFilter() {
+  let set = new Set();
+  piData.forEach((systemObject) => {
+    set.add(systemObject["Resource"]);
+  });
+  return [...set].sort();
 }
 
+/**
+ * Filter Richness selection for Results
+ * @param richness {array} Selected Richness(s)
+ * @param region {string} Selected region
+ * @param material {string} Selected material
+ * @param constellation {string} Selected constellation
+ * @returns {any[]}
+ */
 function filterByRichness(richness, region, material, constellation) {
   let set = new Set();
   piData.forEach((systemObject) => {
     if (
-      systemObject["Region"] === region &&
-      systemObject["Resource"] === material &&
-      filterAnyConstellation(systemObject, constellation)
+        systemObject["Region"] === region &&
+        systemObject["Resource"] === material &&
+        filterAnyConstellation(systemObject, constellation)
     ) {
       for (let i = 0; i < richness.length; i++) {
         if (systemObject["Richness"] === richness[i]) {
@@ -59,14 +82,23 @@ function filterByRichness(richness, region, material, constellation) {
   return [...set];
 }
 
-function getMaterials() {
-  let set = new Set();
-  piData.forEach((systemObject) => {
-    set.add(systemObject["Resource"]);
-  });
-  return [...set].sort();
+/**
+ * Checks if All Constellations was selected
+ * @param planetObject {object}
+ * @param constellation {string} Selected Constellation
+ * @returns {boolean}
+ */
+function filterAnyConstellation(planetObject, constellation) {
+  if (selectedConstellation === "All") {
+    return true;
+  }
+  return planetObject["Constellation"] === constellation;
 }
 
+/**
+ * Variables for Template access
+ * @param res
+ */
 function getResponseLocals(res) {
   res.locals.region = selectedRegion;
   res.locals.constellation = selectedConstellation;
@@ -74,6 +106,10 @@ function getResponseLocals(res) {
   res.locals.richness = selectedRichness;
 }
 
+/**
+ * Rebuild template with new client selection
+ * @param res
+ */
 function renderResultsTemplate(res) {
   res.render("result-builder", {
     regionArray,
@@ -83,19 +119,11 @@ function renderResultsTemplate(res) {
   });
 }
 
-function autoRefreshResults(res, path) {
-  if (results) {
-    results = filterByRichness(
-      selectedRichness,
-      selectedRegion,
-      selectedMaterials,
-      selectedConstellation
-    );
-    return res.redirect("results");
-  }
-  res.redirect(path);
-}
-
+/**
+ * Creates Cookies for Checkboxes
+ * @param req
+ * @param res
+ */
 function createCookie(req, res) {
   res.cookie("Poor", req.body["Poor"]);
   res.cookie("Medium", req.body["Medium"]);
@@ -103,6 +131,13 @@ function createCookie(req, res) {
   res.cookie("Perfect", req.body["Perfect"]);
 }
 
+/**
+ * Checks for cookies on checkboxes, and applies checks to last cookie state
+ * @param req
+ * @param res
+ * @returns {*} Renders page based on cookies
+ * Otherwise leaves checkboxes unchecked.
+ */
 function cookieRichnessCheck(req, res) {
   let poor = req.cookies['Poor'];
   let medium = req.cookies['Medium'];
@@ -128,6 +163,31 @@ function cookieRichnessCheck(req, res) {
   renderResultsTemplate(res);
 }
 
+/**
+ * Checks if results already exists, modifies them then redirects to result.
+ * @param res
+ * @param path
+ * @returns {*} Redirect directly to results or next path.
+ */
+function redirectRouter(res, path) {
+  if (results) {
+    results = filterByRichness(
+        selectedRichness,
+        selectedRegion,
+        selectedMaterials,
+        selectedConstellation
+    );
+    results.sort((a, b) => {
+      return b["Output"] - a["Output"];
+    });
+    return res.redirect("results");
+  }
+  res.redirect(path);
+}
+
+/**
+ * Builds Initial results
+ */
 function getResults(){
   results = filterByRichness(
       selectedRichness,
@@ -140,8 +200,6 @@ function getResults(){
   });
 }
 
-app.use(express.urlencoded({ extended: true }));
-
 app.get("/", (req, res) => {
   renderResultsTemplate(res);
 });
@@ -151,7 +209,7 @@ app.post("/", (req, res) => {
   if (results) {
     selectedConstellation = undefined;
   }
-  autoRefreshResults(res,"constellation");
+  redirectRouter(res,"constellation");
 });
 
 app.get("/constellation", (req, res) => {
@@ -162,7 +220,7 @@ app.get("/constellation", (req, res) => {
 
 app.post("/constellation", (req, res) => {
   selectedConstellation = req.body.constellation;
-  autoRefreshResults(res,"materials");
+  redirectRouter(res,"materials");
 });
 
 app.get("/materials", (req, res) => {
@@ -172,7 +230,7 @@ app.get("/materials", (req, res) => {
 
 app.post("/materials", (req, res) => {
   selectedMaterials = req.body["piMaterial"];
-  autoRefreshResults(res,"richness");
+  redirectRouter(res,"richness");
 });
 
 app.get("/richness", (req, res) => {
@@ -190,14 +248,12 @@ app.post("/richness", (req, res) => {
 app.get("/results", (req, res) => {
   getResponseLocals(res);
   constellationArray = constellationFilter();
-  getResults();
   cookieRichnessCheck(req, res);
 });
 
 app.post("/results", (req, res) => {
   selectedConstellation = req.body.constellation;
   selectedRichness = Object.getOwnPropertyNames(req.body);
-getResults();
   getResponseLocals(res);
   res.redirect("results");
 });
