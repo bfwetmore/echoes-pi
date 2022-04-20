@@ -1,0 +1,11 @@
+extends layout.pug
+
+block content
+    section#content
+        h2 Select Region
+            form(action='/', method="post", id='region')
+                select(name= 'region' onchange='this.form.submit()')
+                    each val in regionArray
+                        option(value=val) #{val}
+
+

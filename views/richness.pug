@@ -1,0 +1,31 @@
+extends layout.pug
+
+block content
+    section#content
+        h2 Select Region
+            form(action='/', method="post", id='region')
+                select(name= 'region' onchange='this.form.submit()')
+                    option(selected=region) #{region}
+                    each val in regionArray
+                        option(value=val) #{val}
+
+        h2 Select Desired PI Material
+            form(action='/materials', method="post", id='system')
+                select(name= 'piMaterial' onchange='this.form.submit()')
+                    option(selected=material) #{material}
+                    each val in materialsArray
+                        option(value=val) #{val}
+
+        h2 Select Desired Richness(s)
+        form(action='/richness', method="post", id='richness', name='richness')
+            input(type='checkbox' name='Poor' checked=false)
+            label Poor
+            input(type='checkbox' name='Medium' checked=false)
+            label Medium
+            input(type='checkbox' name='Rich' checked=false)
+            label Rich
+            input(type='checkbox' name='Perfect' checked=false)
+            label Perfect
+            br
+            button(type='submit') Submit
+
