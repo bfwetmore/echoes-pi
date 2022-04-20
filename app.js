@@ -1,8 +1,9 @@
 const express = require("express");
 let piData = require("./echoesPI.json");
-
+const cookieParser = require("cookie-parser");
 const app = express();
 
+app.use(cookieParser());
 app.use(express.json());
 app.set("view engine", "pug");
 
@@ -17,8 +18,8 @@ let selectedRichness;
 
 function regionFilter() {
   let set = new Set();
-  piData.forEach((data) => {
-    set.add(data["Region"]);
+  piData.forEach((planetObject) => {
+    set.add(planetObject["Region"]);
   });
   return [...set].sort();
 }
@@ -37,7 +38,7 @@ function filterAnyConstellation(systemObject, constellation) {
   if (selectedConstellation === "All") {
     return true;
   }
-  return systemObject['Constellation'] === constellation;
+  return systemObject["Constellation"] === constellation;
 }
 
 function filterByRichness(richness, region, material, constellation) {
@@ -73,8 +74,8 @@ function getResponseLocals(res) {
   res.locals.richness = selectedRichness;
 }
 
-function renderResultsTemplate(res){
-  res.render("results", {
+function renderResultsTemplate(res) {
+  res.render("result-builder", {
     regionArray,
     materialsArray,
     selectedResults: results,
@@ -82,20 +83,75 @@ function renderResultsTemplate(res){
   });
 }
 
+function autoRefreshResults(res, path) {
+  if (results) {
+    results = filterByRichness(
+      selectedRichness,
+      selectedRegion,
+      selectedMaterials,
+      selectedConstellation
+    );
+    return res.redirect("results");
+  }
+  res.redirect(path);
+}
+
+function createCookie(req, res) {
+  res.cookie("Poor", req.body["Poor"]);
+  res.cookie("Medium", req.body["Medium"]);
+  res.cookie("Rich", req.body["Rich"]);
+  res.cookie("Perfect", req.body["Perfect"]);
+}
+
+function cookieRichnessCheck(req, res) {
+  let poor = req.cookies['Poor'];
+  let medium = req.cookies['Medium'];
+  let rich = req.cookies['Rich'];
+  let perfect = req.cookies['Perfect'];
+
+  if (poor || medium || rich || perfect) {
+    poor = poor === "on";
+    medium = medium === "on";
+    rich = rich === "on";
+    perfect = perfect === "on";
+    return res.render("result-builder", {
+      regionArray,
+      materialsArray,
+      selectedResults: results,
+      constellationArray,
+      poor,
+      medium,
+      rich,
+      perfect,
+    });
+  }
+  renderResultsTemplate(res);
+}
+
+function getResults(){
+  results = filterByRichness(
+      selectedRichness,
+      selectedRegion,
+      selectedMaterials,
+      selectedConstellation
+  );
+  results.sort((a, b) => {
+    return b["Output"] - a["Output"];
+  });
+}
+
 app.use(express.urlencoded({ extended: true }));
 
 app.get("/", (req, res) => {
-  res.render("results", {
-    regionArray,
-    materialsArray,
-    selectedResults: results,
-    constellationArray,
-  });
+  renderResultsTemplate(res);
 });
 
 app.post("/", (req, res) => {
   selectedRegion = req.body.region;
-  res.redirect("constellation");
+  if (results) {
+    selectedConstellation = undefined;
+  }
+  autoRefreshResults(res,"constellation");
 });
 
 app.get("/constellation", (req, res) => {
@@ -106,65 +162,42 @@ app.get("/constellation", (req, res) => {
 
 app.post("/constellation", (req, res) => {
   selectedConstellation = req.body.constellation;
-  res.redirect("materials");
+  autoRefreshResults(res,"materials");
 });
 
 app.get("/materials", (req, res) => {
   getResponseLocals(res);
-  res.render("results", {
-    regionArray,
-    materialsArray,
-    selectedResults: results,
-    constellationArray,
-  });
+  renderResultsTemplate(res);
 });
 
 app.post("/materials", (req, res) => {
   selectedMaterials = req.body["piMaterial"];
-  res.redirect("/richness");
+  autoRefreshResults(res,"richness");
 });
 
 app.get("/richness", (req, res) => {
   getResponseLocals(res);
-  res.render("results", {
-    regionArray,
-    materialsArray,
-    selectedResults: results,
-    constellationArray,
-  });
+  cookieRichnessCheck(req, res);
 });
 
 app.post("/richness", (req, res) => {
   selectedRichness = Object.getOwnPropertyNames(req.body);
-  results = filterByRichness(selectedRichness, selectedRegion, selectedMaterials, selectedConstellation);
-  results.sort((a, b) => {
-    return b["Output"] - a["Output"];
-  });
+  createCookie(req, res);
+  getResults();
   res.redirect("/results");
 });
 
 app.get("/results", (req, res) => {
   getResponseLocals(res);
-  res.render("results", {
-    regionArray,
-    materialsArray,
-    selectedResults: results,
-    constellationArray,
-  });
+  constellationArray = constellationFilter();
+  getResults();
+  cookieRichnessCheck(req, res);
 });
 
 app.post("/results", (req, res) => {
   selectedConstellation = req.body.constellation;
   selectedRichness = Object.getOwnPropertyNames(req.body);
-  results = filterByRichness(
-    selectedRichness,
-    selectedRegion,
-    selectedMaterials,
-    selectedConstellation
-  );
-  results.sort((a, b) => {
-    return b["Output"] - a["Output"];
-  });
+getResults();
   getResponseLocals(res);
   res.redirect("results");
 });
