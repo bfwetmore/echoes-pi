@@ -1,63 +1,34 @@
 const express = require("express");
-const data = require("/data/data-manager");
+const dataController = require("../controller");
 
-const router = (express.Router);
+const router = express.Router();
+
 router.get("/", (req, res) => {
-    data.renderResultsTemplate(res);
+  dataController.renderResultsTemplate(res);
 });
 
 router.post("/", (req, res) => {
-    data.selectedRegion = req.body.region;
-    if (data.results) {
-        data.selectedConstellation = undefined;
-    }
-    data.redirectRouter(res,"constellation");
-});
-
-router.get("/constellation", (req, res) => {
-    data.getResponseLocals(res);
-    data.constellationArray = data.constellationFilter();
-    data.renderResultsTemplate(res);
+  dataController.selectRegion(req, res);
 });
 
 router.post("/constellation", (req, res) => {
-    data.selectedConstellation = req.body.constellation;
-    data.redirectRouter(res,"materials");
-});
-
-router.get("/materials", (req, res) => {
-    data.getResponseLocals(res);
-    data.renderResultsTemplate(res);
+  dataController.selectConstellation(req, res);
 });
 
 router.post("/materials", (req, res) => {
-    data.selectedMaterials = req.body["piMaterial"];
-    data.redirectRouter(res,"richness");
+  dataController.selectMaterials(req, res);
 });
 
 router.get("/richness", (req, res) => {
-    data.getResponseLocals(res);
-    data.cookieRichnessCheck(req, res);
+  dataController.cookieRichnessCheck(req, res);
 });
 
 router.post("/richness", (req, res) => {
-    data.selectedRichness = Object.getOwnPropertyNames(req.body);
-    data.createCookie(req, res);
-    data.getResults();
-    res.redirect("/results");
+  dataController.selectRichness(req, res);
 });
 
 router.get("/results", (req, res) => {
-    data.getResponseLocals(res);
-    data.constellationArray = data.constellationFilter();
-    data.cookieRichnessCheck(req, res);
-});
-
-router.post("/results", (req, res) => {
-    data.selectedConstellation = req.body.constellation;
-    data.selectedRichness = Object.getOwnPropertyNames(req.body);
-    data.getResponseLocals(res);
-    res.redirect("results");
+  dataController.cookieRichnessCheck(req, res);
 });
 
 module.exports = router;
