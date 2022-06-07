@@ -1,0 +1,20 @@
+extends material
+block richness
+    h2 Richness(s)
+    form(action=`/richness?region=${region}&constellation=${constellation}&material=${material}`, method="post", id="richness", name="richness")
+        label(class="cbContainer") Poor
+            input(type='checkbox' class="checkbox" name='Poor' checked=richness.poor)
+            span(class='checkmark')
+        label(class="cbContainer") Medium
+            input(type='checkbox' class="checkbox" name='Medium'  checked=richness.medium)
+            span(class='checkmark')
+        label(class="cbContainer") Rich
+            input(type='checkbox' class="checkbox" name='Rich' checked=richness.rich)
+            span(class='checkmark')
+        label(class="cbContainer") Perfect
+            input(type='checkbox' class="checkbox" name='Perfect' checked=richness.perfect)
+            span(class='checkmark')
+        br
+        br
+        button(type='submit' class='submit') Submit
+    block results

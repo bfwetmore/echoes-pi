@@ -1,0 +1,14 @@
+extends region
+block constellation
+    h2 Constellation
+        form(action=`/constellation?region=${region}`, method="post", id='constellation')
+            select(name= 'constellation' onchange='this.form.submit()')
+                option(disabled selected value) -- select an constellation --
+                if constellation
+                    option(selected=constellation) #{constellation}
+                if constellation !== 'All'
+                    option(value='All') All
+                each val in constellationArray
+                    unless val === constellation
+                        option(value=val) #{val}
+    block material

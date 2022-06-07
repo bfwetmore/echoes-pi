@@ -19,16 +19,12 @@ router.post("/materials", (req, res) => {
   dataController.selectMaterials(req, res);
 });
 
-router.get("/richness", (req, res) => {
-  dataController.cookieRichnessCheck(req, res);
-});
-
 router.post("/richness", (req, res) => {
   dataController.selectRichness(req, res);
 });
 
-router.get("/results", (req, res) => {
-  dataController.cookieRichnessCheck(req, res);
+router.post("/results", (req, res) => {
+  dataController.getResults(req, res);
 });
 
 module.exports = router;

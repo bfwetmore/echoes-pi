@@ -1,0 +1,12 @@
+extends constellation
+block material
+    h2 Desired PI Material
+        form(action=`/materials?region=${region}&constellation=${constellation}&material=${material}`, method="post", id='materials')
+            select(name= 'material' onchange='this.form.submit()')
+                option(disabled selected value) -- select an material --
+                if material
+                    option(selected=material) #{material}
+                each val in materialsArray
+                    unless val === material
+                        option(value=val) #{val}
+    block richness

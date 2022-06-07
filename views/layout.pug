@@ -3,10 +3,19 @@ html(lang='en')
 
     head(style="text-align:center;")
         title Eve Echoes PI finder
+        script()
         meta(charset='utf-8')
         meta(name='viewport', content='width=device-width, initial-scale=1')
+
+        link(rel="preconnect", href="https://fonts.googleapis.com")
+        link(rel="preconnect" href="https://fonts.gstatic.com", crossorigin)
+        link(href="https://fonts.googleapis.com/css2?family=Kdam+Thmor+Pro&display=swap", rel="stylesheet")
+        link(id="theme" rel="stylesheet", href="/static/style-light.css")
+
     body(style="text-align:center;")
         include includes/header.pug
         block content
-        include includes/footer.pug
+        block constellation
+    include includes/footer.pug
 
+href

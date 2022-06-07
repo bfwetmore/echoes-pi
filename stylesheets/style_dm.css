@@ -1,0 +1,36 @@
+body {
+    font-family: 'Kdam Thmor Pro', sans-serif;
+    color: lightgray;
+    background-color: #181818;
+}
+
+select {
+    font-family: 'Kdam Thmor Pro', sans-serif;
+    color: lightgrey;
+    background-color: #181818;
+}
+
+footer {
+    font-family: 'Arial', sans-serif;
+    color: lightgrey;
+    background-color: #181818;
+}
+
+.resultHeader {
+    color: #e1b172;
+}
+
+.cbContainer {
+    margin: 0px 15px 0px 3px;
+    cursor: pointer;
+}
+
+.cbContainer input {
+    cursor: pointer;
+}
+
+.themeButton {
+    position: fixed;
+    right: -60px;
+    transform: rotate(90deg)
+}

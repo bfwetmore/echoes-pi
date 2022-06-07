@@ -1,27 +1,23 @@
 const dataManager = require("./data/data-manager");
 
-let selectedRegion;
-let selectedConstellation;
-let selectedMaterials;
-let results;
-let selectedRichness;
-
 /**
  * Variables for Template access
  * @param res
  */
 function buildTemplateVariables(
+  template,
   res,
   region,
   constellation,
   material,
-  richness
+  richness,
+  results
 ) {
   res.locals.region = region;
   res.locals.constellation = constellation;
   res.locals.material = material;
   res.locals.richness = richness;
-  renderResultsTemplate(res, region, richness);
+  renderResultsTemplate(res, region, results, template);
 }
 
 /**
@@ -29,14 +25,13 @@ function buildTemplateVariables(
  * @param res
  * @param region
  */
-function renderResultsTemplate(res, region, richness) {
-  res.render("result-builder", {
-    regionArray: dataManager.regionFilter(),
-    materialsArray: dataManager.materialFilter(),
-    selectedResults: results,
-    constellationArray: dataManager.constellationFilter(region),
-    richness
-  });
+function renderResultsTemplate(res, region, results, template) {
+    res.render(template ? template : "region", {
+        regionArray: dataManager.regionFilter(),
+        materialsArray: dataManager.materialFilter(),
+        selectedResults: results,
+        constellationArray: dataManager.constellationFilter(region),
+    });
 }
 
 /**
@@ -44,87 +39,114 @@ function renderResultsTemplate(res, region, richness) {
  * @param req
  * @param res
  */
-function createCookie(req, res) {
-  res.cookie("Poor", req.body["Poor"]);
-  res.cookie("Medium", req.body["Medium"]);
-  res.cookie("Rich", req.body["Rich"]);
-  res.cookie("Perfect", req.body["Perfect"]);
+function createRichnessCookie(req, res) {
+    res.cookie("Poor", req.body["Poor"]);
+    res.cookie("Medium", req.body["Medium"]);
+    res.cookie("Rich", req.body["Rich"]);
+    res.cookie("Perfect", req.body["Perfect"]);
 }
 
 /**
  * Checks for cookies on checkboxes, and applies checks to last cookie state
  * @param req
- * @param res
  * @returns {*} Renders page based on cookies
  * Otherwise leaves checkboxes unchecked.
  */
 function cookieRichnessCheck(req) {
-  let poor = req.cookies["Poor"];
-  let medium = req.cookies["Medium"];
-  let rich = req.cookies["Rich"];
-  let perfect = req.cookies["Perfect"];
+    return {
+        poor: req.cookies["Poor"] === "on",
+        medium: req.cookies["Medium"] === "on",
+        rich: req.cookies["Rich"] === "on",
+        perfect: req.cookies["Perfect"] === "on",
+    };
+}
 
-  if (poor || medium || rich || perfect) {
-    poor = poor === "on";
-    medium = medium === "on";
-    rich = rich === "on";
-    perfect = perfect === "on";
-  }
-  return [poor, medium, rich, perfect];
+function getCookieArray(req) {
+    let cookieObject = cookieRichnessCheck(req);
+    let cookieArray = Object.keys(cookieObject).filter((key) => cookieObject[key]);
+
+    return cookieArray.map((element) => {
+        return element.charAt(0).toUpperCase() + element.substring(1).toLowerCase();
+    });
 }
 
 function selectRegion(req, res) {
-  if (selectedConstellation) {
-    selectedConstellation = undefined;
-  }
-  let region = req.body["region"];
-  if (!region) {
-    region = req.query.region;
-  }
-  buildTemplateVariables(res, region);
+    let region = req.body["region"];
+    buildTemplateVariables("constellation", res, region);
 }
 
 function selectConstellation(req, res) {
-  const constellation = req.body["constellation"];
-  const region = req.query.region;
-  return !results
-    ? buildTemplateVariables(res, region, constellation)
-    : getResults(res);
+    const constellation = req.body.constellation;
+    const region = req.query.region;
+    return buildTemplateVariables("material", res, region, constellation);
 }
 
 function selectMaterials(req, res) {
-  const material = req.body["piMaterial"];
-  const region = req.query.region;
-  const constellation = req.query.region;
-  const richness = cookieRichnessCheck(req);
-  return !results ? buildTemplateVariables(res, region, constellation, material, richness) : getResults(res);
+    const material = req.body.material;
+    const region = req.query.region;
+    const constellation = req.query.constellation;
+    const richness = cookieRichnessCheck(req);
+    return buildTemplateVariables(
+        "richness",
+        res,
+        region,
+        constellation,
+        material,
+        richness
+    );
 }
 
 function selectRichness(req, res) {
-  selectedRichness = Object.getOwnPropertyNames(req.body);
-  createCookie(req, res);
-  getResults(res);
+    createRichnessCookie(req, res);
+    const richness = Object.getOwnPropertyNames(req.body);
+    return getResults(req, res, richness);
+}
+
+function getRichnessCheckboxState(req, richnessBody) {
+    let richnessCookie = {};
+    if (richnessBody) {
+        richnessBody.forEach(key => richnessCookie[key.toLowerCase()] = true);
+        return richnessCookie;
+    }
+    return cookieRichnessCheck(req);
 }
 
 /**
  * Builds Initial results
  */
-function getResults(res) {
-  results = dataManager.filterByRichness(
-    selectedRichness,
-    selectedRegion,
-    selectedMaterials,
-    selectedConstellation
-  );
-  results.sort((a, b) => b["Output"] - a["Output"]);
-  res.redirect("/results");
+function getResults(req, res, richnessBody) {
+    const material = req.body.material ? req.body.material : req.query.material;
+    const region = req.body.region ? req.body.region : req.query.region;
+    const constellation = req.body.region ? undefined : req.body.constellation
+        ? req.body.constellation
+        : req.query.constellation;
+
+    const richness = richnessBody ? richnessBody : getCookieArray(req);
+
+    const results = dataManager.filterByRichness(
+        richness,
+        region,
+        material,
+        constellation
+    );
+    results.sort((a, b) => b["Output"] - a["Output"]);
+
+    return buildTemplateVariables(
+        "result-builder",
+        res,
+        region,
+        constellation,
+        material,
+        getRichnessCheckboxState(req, richnessBody),
+        results
+    );
 }
 
 module.exports = {
+  getResults,
   renderResultsTemplate,
   selectRegion,
   selectConstellation,
   selectMaterials,
-  cookieRichnessCheck,
   selectRichness,
 };
