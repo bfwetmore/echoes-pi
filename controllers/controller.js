@@ -1,65 +1,55 @@
-const dataManager = require("./data/data-manager");
+const dataManager = require("../data/data-manager");
+const cookie = require("./cookieController");
 
 /**
- * Creates Cookies for Checkboxes
+ * Control router data to render the next template in the process.
  * @param req
  * @param res
+ * @param template
  */
-function createRichnessCookie(req, res) {
-  res.cookie("Poor", req.body["Poor"]);
-  res.cookie("Medium", req.body["Medium"]);
-  res.cookie("Rich", req.body["Rich"]);
-  res.cookie("Perfect", req.body["Perfect"]);
-}
-
-/**
- * Checks for cookies on checkboxes, and applies checks to last cookie state
- * @param req
- * @returns {*} Renders page based on cookies
- * Otherwise leaves checkboxes unchecked.
- */
-function cookieRichnessCheck(req) {
-  return {
-    poor: req.cookies["Poor"] === "on",
-    medium: req.cookies["Medium"] === "on",
-    rich: req.cookies["Rich"] === "on",
-    perfect: req.cookies["Perfect"] === "on",
-  };
-}
-
-function getCookieArray(req) {
-  let cookieObject = cookieRichnessCheck(req);
-  let cookieArray = Object.keys(cookieObject).filter(
-    (key) => cookieObject[key]
-  );
-
-  return cookieArray.map((element) => {
-    return element.charAt(0).toUpperCase() + element.substring(1).toLowerCase();
-  });
-}
-
 function getResponse(req, res, template) {
   const selection = buildSelection(req);
-  buildTemplateVariables(res, selection, cookieRichnessCheck(req));
+  buildTemplateVariables(res, selection, cookie.getCookies(req));
   renderTemplate(res, selection.region, template);
 }
 
+/**
+ * Get initial results, creates newly selected richness cookies.
+ * @param req
+ * @param res
+ */
 function getResults(req, res) {
-  createRichnessCookie(req, res);
-  const richness = Object.getOwnPropertyNames(req.body);
-  return rebuildResults(req, res, richness);
+  cookie.createRichnessCookie(req, res);
+  const richnessArray = Object.getOwnPropertyNames(req.body);
+  buildResults(req, res, richnessArray);
 }
 
-function checkRichnessState(req, richnessBody) {
-  let richnessCookie = {};
-  if (richnessBody) {
-    richnessBody.forEach((key) => (richnessCookie[key.toLowerCase()] = true));
-    return richnessCookie;
-  }
-  return cookieRichnessCheck(req);
+/**
+ * Builds initial results and rebuilds resubmitted Data.
+ * @param req
+ * @param res
+ * @param {array} richnessArray
+ */
+function buildResults(req, res, richnessArray) {
+  const selection = buildSelection(req, richnessArray);
+  const results = dataManager.generateResults(selection);
+  results.sort((a, b) => b["Output"] - a["Output"]);
+
+  buildTemplateVariables(
+    res,
+    selection,
+    cookie.checkRichness(req, richnessArray)
+  );
+  renderTemplate(res, selection.region, "result-builder", results);
 }
 
-function buildSelection(req, richnessBody) {
+/**
+ * Construct an object of users Selections.
+ * @param req
+ * @param {option? : Array} richness optional.
+ * @returns {object} of selection(s).
+ */
+function buildSelection(req, richness) {
   const material = req.body.material ? req.body.material : req.query.material;
   const region = req.body.region ? req.body.region : req.query.region;
   const constellation = req.body.region
@@ -68,31 +58,18 @@ function buildSelection(req, richnessBody) {
     ? req.body.constellation
     : req.query.constellation;
 
-  const richness = richnessBody ? richnessBody : getCookieArray(req);
-  return { material, region, constellation, richness };
-}
-
-/**
- * Builds Initial results
- */
-function rebuildResults(req, res, richnessBody) {
-  const selection = buildSelection(req, richnessBody);
-
-  const results = dataManager.filterByRichness(
-    selection.richness,
-    selection.region,
-    selection.material,
-    selection.constellation
-  );
-  results.sort((a, b) => b["Output"] - a["Output"]);
-
-  buildTemplateVariables(res, selection, checkRichnessState(req, richnessBody));
-  renderTemplate(res, selection.region, "result-builder", results);
+  const richnessArray = richness ? richness : cookie.createArray(req);
+  return { material, region, constellation, richnessArray };
 }
 
 /**
  * Variables for Template access
  * @param res
+ * @param {object} selection User selections.
+ * @param {string} selection.region
+ * @param {string} selection.constellation
+ * @param {string} selection.material
+ * @param {object} richness
  */
 function buildTemplateVariables(res, selection, richness) {
   res.locals.region = selection.region;
@@ -104,19 +81,21 @@ function buildTemplateVariables(res, selection, richness) {
 /**
  * Rebuild template with new client selection
  * @param res
- * @param region
+ * @param {string} region
+ * @param {string} template Template to render by.
+ * @param {option? : Object} results optional
  */
 function renderTemplate(res, region, template, results) {
   res.render(template ? template : "region", {
-    regionArray: dataManager.regionFilter(),
-    materialsArray: dataManager.materialFilter(),
+    regionArray: dataManager.generateRegionList(),
+    materialsArray: dataManager.generateMaterialList(),
     selectedResults: results,
     constellationArray: dataManager.constellationFilter(region),
   });
 }
 
 module.exports = {
-  rebuildResults,
+  rebuildResults: buildResults,
   renderTemplate,
   getResponse,
   getResults,

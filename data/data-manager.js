@@ -1,10 +1,10 @@
-const piData = require("../echoesPI.json");
+const piData = require("./echoesPI.json");
 
 /**
- * Filters for a list of Regions
+ * Construct a list of regions.
  * @returns {array}
  */
-function regionFilter() {
+function generateRegionList() {
   let set = new Set();
   piData.forEach((planetObject) => {
     set.add(planetObject["Region"]);
@@ -13,7 +13,8 @@ function regionFilter() {
 }
 
 /**
- * Filters for a list of Constellations
+ * Filters by region for a list of Constellations
+ *  @param {string} region
  * @returns {array}
  */
 function constellationFilter(region) {
@@ -27,10 +28,10 @@ function constellationFilter(region) {
 }
 
 /**
- * Filters for a list of Materials
+ * Construct a list of materials
  * @returns {array}
  */
-function materialFilter() {
+function generateMaterialList() {
   let set = new Set();
   piData.forEach((systemObject) => {
     set.add(systemObject["Resource"]);
@@ -39,23 +40,24 @@ function materialFilter() {
 }
 
 /**
- * Filter Richness selection for Results
- * @param richness {array} Selected Richness(s)
- * @param region {string} Selected region
- * @param material {string} Selected material
- * @param constellation {string} Selected constellation
- * @returns {any[]}
+ * Take selections to filter out results.
+ * @param {object} selection - Object of Selections
+ * @param {string} selection.region
+ * @param {string} selection.material
+ * @param {string} selection.constellation
+ * @param {array} selection.richnessArray
+ * @returns {object} of Systems.
  */
-function filterByRichness(richness, region, material, constellation) {
+function generateResults(selection) {
   let set = new Set();
   piData.forEach((systemObject) => {
     if (
-      systemObject["Region"] === region &&
-      systemObject["Resource"] === material &&
-      filterAnyConstellation(systemObject, constellation)
+      systemObject["Region"] === selection.region &&
+      systemObject["Resource"] === selection.material &&
+      filterAnyConstellation(systemObject, selection.constellation)
     ) {
-      for (let i = 0; i < richness.length; i++) {
-        if (systemObject["Richness"] === richness[i]) {
+      for (let i = 0; i < selection.richnessArray.length; i++) {
+        if (systemObject["Richness"] === selection.richnessArray[i]) {
           set.add(systemObject);
         }
       }
@@ -65,9 +67,9 @@ function filterByRichness(richness, region, material, constellation) {
 }
 
 /**
- * Checks if All Constellations was selected
- * @param planetObject {object}
- * @param constellation {string} Selected Constellation
+ * Check if 'All' Constellations was selected
+ * @param {object} planetObject
+ * @param {string} constellation  Selected Constellation
  * @returns {boolean}
  */
 function filterAnyConstellation(planetObject, constellation) {
@@ -79,7 +81,7 @@ function filterAnyConstellation(planetObject, constellation) {
 
 module.exports = {
   constellationFilter,
-  regionFilter,
-  materialFilter,
-  filterByRichness,
+  generateRegionList,
+  generateMaterialList,
+  generateResults,
 };

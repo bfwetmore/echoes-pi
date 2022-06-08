@@ -1,26 +1,24 @@
 header
     h1 EVE Echoes PI Search
 
-    button(id="theme-toggle" class="themeButton") Switch to dark mode
+    button(id="theme-toggle" class="themeButton") Dark Mode
         script.
             document.addEventListener("DOMContentLoaded", () => {
                 const themeStylesheet = document.getElementById("theme");
                 const storedTheme = localStorage.getItem("theme");
+
                 if (storedTheme) {
                     themeStylesheet.href = storedTheme;
                 }
                 const themeToggle = document.getElementById("theme-toggle");
+                themeStylesheet.href.includes("light") ? themeToggle.innerText = "Dark Mode" :
+                    themeToggle.innerText = "Light Mode";
                 themeToggle.addEventListener("click", () => {
-                    // if it's light -> go dark
-                    if (themeStylesheet.href.includes("light")) {
-                        themeStylesheet.href = "/static/style_dm.css";
-                        themeToggle.innerText = "Switch to light mode";
-                    } else {
-                        // if it's dark -> go light
+                    themeStylesheet.href.includes("light") ?
+                        themeStylesheet.href = "/static/style_dm.css" :
                         themeStylesheet.href = "/static/style-light.css";
-                        themeToggle.innerText = "Switch to dark mode";
-                    }
-                    // save the preference to localStorage
+                        themeStylesheet.href.includes("light") ? themeToggle.innerText = "Dark Mode" :
+                        themeToggle.innerText = "Light Mode";
                     localStorage.setItem("theme", themeStylesheet.href);
                 });
             });

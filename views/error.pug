@@ -1,0 +1,9 @@
+extends layout
+
+block content
+    h1 ERROR #{error.status} #{error.message}
+
+    img(src = 'https://c.tenor.com/neppmKtRoRsAAAAC/john-travolta-where-am-i.gif')
+
+    form(action='/', method='get')
+        button(type='submit' class='submit') Back to Home

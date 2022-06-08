@@ -16,6 +16,10 @@ footer {
     background-color: #181818;
 }
 
+th {
+    color: #e1b172;
+}
+
 .resultHeader {
     color: #e1b172;
 }
@@ -30,7 +34,13 @@ footer {
 }
 
 .themeButton {
+    font-family: 'Kdam Thmor Pro', sans-serif;
     position: fixed;
-    right: -60px;
-    transform: rotate(90deg)
+    right: -30px;
+    transform: rotate(90deg);
+    }
+
+.submit {
+    font-family: 'Kdam Thmor Pro', sans-serif;
+    background-color: lightgrey;
 }

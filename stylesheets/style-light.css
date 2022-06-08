@@ -14,15 +14,15 @@ h2 {
     font-family: 'Kdam Thmor Pro', sans-serif;
 }
 
-th {
-    font-weight: bold;
-}
-
 footer {
     font-family: 'Arial', sans-serif;
 }
 
 .resultHeader {
+    color: #d55549;
+}
+
+th {
     color: #d55549;
 }
 
@@ -36,7 +36,12 @@ footer {
 }
 
 .themeButton {
+    font-family: 'Kdam Thmor Pro', sans-serif;
     position: fixed;
-    right: -60px;
-    transform: rotate(90deg)
+    right: -30px;
+    transform: rotate(90deg);
+    }
+
+.submit {
+    font-family: 'Kdam Thmor Pro', sans-serif;
 }

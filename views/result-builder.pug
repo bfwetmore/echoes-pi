@@ -47,16 +47,15 @@ block content
         label(class="cbContainer") Perfect
             input(type='checkbox' class="checkbox" name='Perfect' checked=richness.perfect)
             span(class='checkmark')
-
         br
         br
         button(type='submit' class='submit') Submit
 
     h2
         | Results for &nbsp
-        i(class="resultHeader") #{material} &nbsp
+        span(class="resultHeader") #{material} &nbsp
         | in &nbsp
-        i(class="resultHeader") #{region}.
+        span(class="resultHeader") #{region}.
     table(style='width:20%;margin-left:auto;margin-right:auto;', border="1")
         tr
             th System/Planet
@@ -69,5 +68,3 @@ block content
                 td #{val.Constellation}
                 td #{val.Richness}
                 td #{val.Output}
-
-
