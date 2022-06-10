@@ -1,30 +1,30 @@
 const express = require("express");
-const dataController = require("../controllers/controller");
+const controller = require("../controllers/controller");
 
 const router = express.Router();
 
 router.get("/", (req, res) => {
-  dataController.renderTemplate(res);
+  controller.getRegion(res);
 });
 
 router.post("/", (req, res) => {
-  dataController.getResponse(req, res, "constellation");
+  controller.getConstellations(req, res);
 });
 
 router.post("/constellation", (req, res) => {
-  dataController.getResponse(req, res, "material");
+  controller.getMaterials(req, res);
 });
 
 router.post("/materials", (req, res) => {
-  dataController.getResponse(req, res, "richness");
+  controller.getRichness(req, res);
 });
 
 router.post("/richness", (req, res) => {
-  dataController.getResults(req, res);
+  controller.getResults(req, res);
 });
 
 router.post("/results", (req, res) => {
-  dataController.rebuildResults(req, res);
+  controller.buildResults(req, res);
 });
 
 module.exports = router;

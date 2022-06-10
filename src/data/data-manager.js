@@ -46,7 +46,7 @@ function generateMaterialList() {
  * @param {string} selection.material
  * @param {string} selection.constellation
  * @param {array} selection.richnessArray
- * @returns {object} of Systems.
+ * @returns {array [objects]} of Systems.
  */
 function generateResults(selection) {
   let set = new Set();
@@ -54,7 +54,9 @@ function generateResults(selection) {
     if (
       systemObject["Region"] === selection.region &&
       systemObject["Resource"] === selection.material &&
-      filterAnyConstellation(systemObject, selection.constellation)
+      (selection.constellation === "All"
+        ? true
+        : systemObject["Constellation"] === selection.constellation)
     ) {
       for (let i = 0; i < selection.richnessArray.length; i++) {
         if (systemObject["Richness"] === selection.richnessArray[i]) {
@@ -64,19 +66,6 @@ function generateResults(selection) {
     }
   });
   return [...set];
-}
-
-/**
- * Check if 'All' Constellations was selected
- * @param {object} planetObject
- * @param {string} constellation  Selected Constellation
- * @returns {boolean}
- */
-function filterAnyConstellation(planetObject, constellation) {
-  if (constellation === "All") {
-    return true;
-  }
-  return planetObject["Constellation"] === constellation;
 }
 
 module.exports = {

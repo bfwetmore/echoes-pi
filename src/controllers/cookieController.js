@@ -44,7 +44,7 @@ function createArray(req) {
  * Check POST body for most recent Checkmarks before using the cookies.
  * If true converts values to an object.
  * @param req
- * @param richnessBody
+ * @param {array} richnessBody
  * @returns {object}
  */
 function checkRichness(req, richnessBody) {
