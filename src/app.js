@@ -1,6 +1,6 @@
-const express = require("express");
-const cookieParser = require("cookie-parser");
-const mainRoutes = require("./router/router");
+import express from 'express';
+import cookieParser from "cookie-parser";
+import mainRoutes from "./router/router.js";
 const app = express();
 
 app.use(cookieParser());

@@ -1,5 +1,6 @@
-const express = require("express");
-const controller = require("../controllers/controller");
+import express from 'express';
+import controller from '../controllers/controller.js';
+//const controller = require("../controllers/controller");
 
 const router = express.Router();
 
@@ -27,4 +28,4 @@ router.post("/results", (req, res) => {
   controller.buildResults(req, res);
 });
 
-module.exports = router;
+export default router;
