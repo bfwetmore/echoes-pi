@@ -13,10 +13,9 @@ function createRichnessCookie(req, res) {
 /**
  * Check for user cookies on checkboxes
  * @param req
- * @returns {*} Renders page based on cookies
- * Otherwise leaves checkboxes unchecked.
+ * @returns {*} Object of richness cookies and the state they are in.
  */
-function getCookies(req) {
+function getRichnessCookiesObject(req) {
   return {
     poor: req.cookies["Poor"] === "on",
     medium: req.cookies["Medium"] === "on",
@@ -31,9 +30,9 @@ function getCookies(req) {
  * @returns {array}
  */
 function createArray(req) {
-  let cookieObject = getCookies(req);
+  let cookieObject = getRichnessCookiesObject(req);
   let cookieArray = Object.keys(cookieObject).filter(
-    (key) => cookieObject[key]
+    key => cookieObject[key]
   );
   return cookieArray.map((element) => {
     return element.charAt(0).toUpperCase() + element.substring(1).toLowerCase();
@@ -47,18 +46,18 @@ function createArray(req) {
  * @param {array} richnessBody
  * @returns {object}
  */
-function checkRichness(req, richnessBody) {
-  let richnessCookie = {};
+function getRichnessObject(req, richnessBody) {
+  let richnessObject = {};
   if (richnessBody) {
-    richnessBody.forEach((key) => (richnessCookie[key.toLowerCase()] = true));
-    return richnessCookie;
+    richnessBody.forEach((key) => (richnessObject[key.toLowerCase()] = true));
+    return richnessObject;
   }
-  return getCookies(req);
+  return getRichnessCookiesObject(req);
 }
 
 module.exports = {
   createRichnessCookie,
-  getCookies,
+  getRichnessCookiesObject,
   createArray,
-  checkRichness,
+  getRichnessObject,
 };

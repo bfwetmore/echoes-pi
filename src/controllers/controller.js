@@ -58,7 +58,7 @@ function getRichness(req, res) {
     regionArray: dataManager.generateRegionList(),
     constellationArray: dataManager.constellationFilter(selection.region),
     materialsArray: dataManager.generateMaterialList(),
-    richness: cookie.getCookies(req),
+    richness: cookie.getRichnessCookiesObject(req),
   };
   renderTemplate(res, "richness", templateVariables);
 }
@@ -73,7 +73,6 @@ function getResults(req, res) {
   const richnessArray = Object.getOwnPropertyNames(req.body);
   buildResults(req, res, richnessArray);
 }
-
 
 /**
  * Builds initial results and rebuilds resubmitted Data.
@@ -92,7 +91,7 @@ function buildResults(req, res, richnessArray) {
     regionArray: dataManager.generateRegionList(),
     constellationArray: dataManager.constellationFilter(selection.region),
     materialsArray: dataManager.generateMaterialList(),
-    richness: cookie.checkRichness(req, richnessArray),
+    richness: cookie.getRichnessObject(req, richnessArray),
     selectedResults: results,
   };
   renderTemplate(res, "result-builder", templateVariables);
@@ -105,18 +104,26 @@ function buildResults(req, res, richnessArray) {
  * @returns {object} of selection(s).
  */
 function buildSelection(req, richness) {
-  const material = req.body.material ? req.body.material : req.query.material;
-  const region = req.body.region ? req.body.region : req.query.region;
-  const constellation = req.body.region
-    ? undefined
-    : req.body.constellation
-    ? req.body.constellation
-    : req.query.constellation;
+  let material = req.query.material;
+  if (req.body.material) {
+    material = req.body.material;
+  }
+  let region = req.query.region;
+  if (req.body.region) {
+    region = req.body.region;
+  }
 
-  const richnessArray = richness ? richness : cookie.createArray(req);
+  let constellation = req.query.constellation;
+  if (req.body.region) {
+    constellation = undefined;
+  } else if (req.body.constellation) {
+    constellation = req.body.constellation;
+  }
+
+  let richnessArray = richness;
+  if (!richness) {richnessArray = cookie.createArray(req);}
   return { material, region, constellation, richnessArray };
 }
-
 
 /**
  * Rebuild template with new client selection.

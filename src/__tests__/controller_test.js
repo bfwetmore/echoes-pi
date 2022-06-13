@@ -8,7 +8,7 @@ describe("main controller buildSelection_method", () => {
       query: {
         constellation: "XHQ-R",
         region: "Providence",
-        material: "Coolant",
+        material: "Plasmoids",
       },
     };
     const richness = ["rich", "poor"];
@@ -27,7 +27,7 @@ describe("main controller buildSelection_method", () => {
       },
       query: {
         constellation: "XHQ-R",
-        region: "Providence",
+        region: "Curse",
         material: "Coolant",
       },
     };
@@ -88,7 +88,7 @@ describe("main controller buildSelection_method", () => {
 
 describe("cookie_controller", () => {
   const cookies = require("../controllers/cookieController");
-  test("getCookies - when all richness cookies are on, object of keys all true", () => {
+  test("getRichnessCookiesObject - when all richness cookies are on, object of keys all true", () => {
     const request = {
       cookies: {
         Perfect: "on",
@@ -98,14 +98,14 @@ describe("cookie_controller", () => {
       },
     };
 
-    expect(cookies.getCookies(request)).toStrictEqual({
+    expect(cookies.getRichnessCookiesObject(request)).toStrictEqual({
       poor: true,
       medium: true,
       rich: true,
       perfect: true,
     });
   });
-  test("checkRichness, when richness body parameter is passed body is returned as object", () => {
+  test("getRichnessObject, when richness body parameter is passed body is returned as object", () => {
     const request = {
       cookies: {
         Perfect: "on",
@@ -115,7 +115,7 @@ describe("cookie_controller", () => {
       },
     };
     const richnessBody = ["Rich", "Perfect"];
-    expect(cookies.checkRichness(request, richnessBody)).toStrictEqual({
+    expect(cookies.getRichnessObject(request, richnessBody)).toStrictEqual({
       rich: true,
       perfect: true,
     });

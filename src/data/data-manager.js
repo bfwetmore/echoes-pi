@@ -5,11 +5,11 @@ const piData = require("./echoesPI.json");
  * @returns {array}
  */
 function generateRegionList() {
-  let set = new Set();
-  piData.forEach((planetObject) => {
-    set.add(planetObject["Region"]);
+  let regionSet = new Set();
+  piData.forEach((systemObject) => {
+    regionSet.add(systemObject["Region"]);
   });
-  return [...set].sort();
+  return [...regionSet].sort();
 }
 
 /**
@@ -18,13 +18,13 @@ function generateRegionList() {
  * @returns {array}
  */
 function constellationFilter(region) {
-  let set = new Set();
-  piData.forEach((planetObject) => {
-    if (planetObject["Region"] === region) {
-      set.add(planetObject["Constellation"]);
+  let constellationSet = new Set();
+  piData.forEach((systemObject) => {
+    if (systemObject["Region"] === region) {
+      constellationSet.add(systemObject["Constellation"]);
     }
   });
-  return [...set].sort();
+  return [...constellationSet].sort();
 }
 
 /**
@@ -32,11 +32,11 @@ function constellationFilter(region) {
  * @returns {array}
  */
 function generateMaterialList() {
-  let set = new Set();
+  let materialSet = new Set();
   piData.forEach((systemObject) => {
-    set.add(systemObject["Resource"]);
+    materialSet.add(systemObject["Resource"]);
   });
-  return [...set].sort();
+  return [...materialSet].sort();
 }
 
 /**
@@ -49,7 +49,7 @@ function generateMaterialList() {
  * @returns {array [objects]} of Systems.
  */
 function generateResults(selection) {
-  let set = new Set();
+  let systemSet = new Set();
   piData.forEach((systemObject) => {
     if (
       systemObject["Region"] === selection.region &&
@@ -60,12 +60,12 @@ function generateResults(selection) {
     ) {
       for (let i = 0; i < selection.richnessArray.length; i++) {
         if (systemObject["Richness"] === selection.richnessArray[i]) {
-          set.add(systemObject);
+          systemSet.add(systemObject);
         }
       }
     }
   });
-  return [...set];
+  return [...systemSet];
 }
 
 module.exports = {
