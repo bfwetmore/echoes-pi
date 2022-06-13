@@ -1,7 +1,7 @@
 const dataManager = require("../data/data-manager");
 
 describe("data-manager_tests", () => {
-  test("generateRegionList_NoConditions_GenerateListOfRegions", () => {
+  test("generateRegionList should generate list of regions", () => {
     expect(dataManager.generateRegionList()).toEqual(
       expect.arrayContaining([expect.any(String)])
     );
@@ -11,13 +11,13 @@ describe("data-manager_tests", () => {
     expect(dataManager.generateRegionList().length).toBeGreaterThanOrEqual(56);
   });
 
-  test("generateMaterialList_NoConditions_GenerateListOfMaterials", () => {
+  test("generateMaterialList should generate list of materials", () => {
     expect(dataManager.generateMaterialList()).toEqual(
       expect.arrayContaining([expect.any(String)])
     );
   });
 
-  test("constellationFilter_ARegionPassedAsParameter_GenerateListOfConstellationsInRegion", () => {
+  test("constellationFilter should generate list of constellations in selected region", () => {
     const selectedRegion = "Providence";
 
     expect(dataManager.constellationFilter(selectedRegion)).toEqual(
@@ -25,7 +25,7 @@ describe("data-manager_tests", () => {
     );
   });
 
-  test("generateResults_PassAMockOfUserSelection_ReturnArrayOfSystemObjects", () => {
+  test("generateResults should return array of objects when given all selections", () => {
     const selection = {
       region: "Providence",
       constellation: "ZQ2-CF",

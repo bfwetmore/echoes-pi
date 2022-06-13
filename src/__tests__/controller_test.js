@@ -1,6 +1,6 @@
-describe("main_controller_buildSelection_method", () => {
+describe("main controller buildSelection_method", () => {
   const buildSelection = require("../controllers/controller").buildSelection;
-  test("buildSelection_WhenBodyIsMaterial_MaterialBodyIsUsed", () => {
+  test("when body is material material body is used", () => {
     const request = {
       body: {
         material: "Coolant",
@@ -20,7 +20,7 @@ describe("main_controller_buildSelection_method", () => {
     });
   });
 
-  test("buildSelection_WhenBodyIsRegion_RegionBodyIsUsed", () => {
+  test("when body is region, region body is used", () => {
     const request = {
       body: {
         region: "Providence",
@@ -40,7 +40,7 @@ describe("main_controller_buildSelection_method", () => {
     });
   });
 
-  test("buildSelection_WhenBodyIsConstellation_Constellation_Body_Is_Used", () => {
+  test("when body is constellation, constellation body is used", () => {
     const request = {
       body: {
         constellation: "XHQ-R",
@@ -60,7 +60,7 @@ describe("main_controller_buildSelection_method", () => {
     });
   });
 
-  test("buildSelection_WhenNoRichnessParameterPass_UsesCookies", () => {
+  test("when no richness parameter passed, uses cookies", () => {
     const request = {
       body: {
         constellation: "XHQ-R",
@@ -88,7 +88,7 @@ describe("main_controller_buildSelection_method", () => {
 
 describe("cookie_controller", () => {
   const cookies = require("../controllers/cookieController");
-  test("getCookies_WhenAllRichnessCookiesAreOn_ObjectOfKeysAllTrue", () => {
+  test("getCookies - when all richness cookies are on, object of keys all true", () => {
     const request = {
       cookies: {
         Perfect: "on",
@@ -105,7 +105,7 @@ describe("cookie_controller", () => {
       perfect: true,
     });
   });
-  test("checkRichness_WhenRichnessBodyParameterIsPassed_BodyIsReturnedAsObject", () => {
+  test("checkRichness, when richness body parameter is passed body is returned as object", () => {
     const request = {
       cookies: {
         Perfect: "on",
