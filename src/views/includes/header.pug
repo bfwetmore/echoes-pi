@@ -23,18 +23,4 @@ header
                 });
             });
 
-            function showTheme() {
-                if (localStorage.getItem("theme") === "dark") {
-                    document.body.classList.add("dark");
-                }
-            }
 
-            function showContent() {
-                document.body.style.visibility = 'visible';
-                document.body.style.opacity = 1;
-            }
-
-            window.addEventListener('DOMContentLoaded', function () {
-                showTheme();
-                showContent();
-            });
