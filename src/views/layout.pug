@@ -21,4 +21,8 @@ html(lang='en')
         block content
         block constellation
         include includes/footer.pug
-
+script.
+    window.addEventListener('DOMContentLoaded', function () {
+        showTheme();
+        showContent();
+    });
