@@ -1,0 +1,28 @@
+header
+    h1 EVE Echoes PI Search
+
+    button(id="theme-toggle" class="themeButton") Dark Mode
+        script.
+            document.addEventListener("DOMContentLoaded", () => {
+                const themeStylesheet = document.getElementById("theme");
+                const storedTheme = localStorage.getItem("theme");
+
+                if (storedTheme) {
+                    themeStylesheet.href = storedTheme;
+                }
+                const themeToggle = document.getElementById("theme-toggle");
+                themeStylesheet.href.includes("light") ? themeToggle.innerText = "Dark Mode" :
+                    themeToggle.innerText = "Light Mode";
+                themeToggle.addEventListener("click", () => {
+                    themeStylesheet.href.includes("light") ?
+                        themeStylesheet.href = "/static/style_dm.css" :
+                        themeStylesheet.href = "/static/style-light.css";
+                        themeStylesheet.href.includes("light") ? themeToggle.innerText = "Dark Mode" :
+                        themeToggle.innerText = "Light Mode";
+                    localStorage.setItem("theme", themeStylesheet.href);
+                });
+            });
+
+            if (localStorage.getItem("theme") === "dark") {
+                document.body.classList.add("dark");
+            }

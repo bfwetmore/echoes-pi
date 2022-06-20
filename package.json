@@ -2,15 +2,21 @@
   "name": "echoes_pi",
   "version": "1.0.0",
   "description": "",
-  "main": "app.js",
+  "main": "./src/app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "cookie-parser": "^1.4.6",
     "express": "^4.17.3",
+    "jslint": "^0.12.1",
     "pug": "^3.0.2"
+  },
+  "devDependencies": {
+    "eslint": "^8.13.0",
+    "jest": "^28.1.1"
   }
 }

@@ -1,0 +1,12 @@
+extends layout
+block content
+    h2 Region
+        form(action=`/`, method="post", id='region')
+            select(name= 'region' onchange='this.form.submit()')
+                option(disabled selected value) -- select an region --
+                if region
+                    option(selected=region) #{region}
+                each val in regionArray
+                    unless val === region
+                        option(value=val) #{val}
+block constellation

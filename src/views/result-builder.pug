@@ -1,0 +1,69 @@
+extends layout
+block content
+    section#content
+    h2 Region
+        form(action=`/results?region=${region}&constellation=${constellation}&material=${material}`, method="post", id='region')
+            select(name= 'region' onchange='this.form.submit()')
+                option(disabled selected value) -- select an region --
+                if region
+                    option(selected=region) #{region}
+                each val in regionArray
+                    unless val === region
+                        option(value=val) #{val}
+
+    h2 Constellation
+        form(action=`/results?region=${region}&constellation=${constellation}&material=${material}`, method="post", id='constellation')
+            select(name= 'constellation' onchange='this.form.submit()')
+                option(disabled selected value) -- select an constellation --
+                if constellation
+                    option(selected=constellation) #{constellation}
+                if constellation !== 'All'
+                    option(value='All') All
+                each val in constellationArray
+                    unless val === constellation
+                        option(value=val) #{val}
+
+    h2 Desired PI Material
+        form(action=`/results?region=${region}&constellation=${constellation}&material=${material}`, method="post", id='materials')
+            select(name= 'material' onchange='this.form.submit()')
+                option(disabled selected value) -- select an material --
+                if material
+                    option(selected=material) #{material}
+                each val in materialsArray
+                    unless val === material
+                        option(value=val) #{val}
+
+    h2 Richness(s)
+    form(action=`/richness?region=${region}&constellation=${constellation}&material=${material}`, method="post", id='richness')
+        label(class="cbContainer") Poor
+            input(type='checkbox' class="checkbox" name='Poor' checked=richness.poor, onchange='this.form.submit()')
+            span(class='checkmark')
+        label(class="cbContainer") Medium
+            input(type='checkbox' class="checkbox" name='Medium'  checked=richness.medium, onchange='this.form.submit()')
+            span(class='checkmark')
+        label(class="cbContainer") Rich
+            input(type='checkbox' class="checkbox" name='Rich' checked=richness.rich, onchange='this.form.submit()')
+            span(class='checkmark')
+        label(class="cbContainer") Perfect
+            input(type='checkbox' class="checkbox" name='Perfect' checked=richness.perfect, onchange='this.form.submit()')
+            span(class='checkmark')
+        br
+        br
+
+    h2
+        | Results for &nbsp
+        span(class="resultHeader") #{material} &nbsp
+        | in &nbsp
+        span(class="resultHeader") #{region}.
+    table(style='width:20%;margin-left:auto;margin-right:auto;', border="1")
+        tr
+            th System/Planet
+            th Constellation
+            th Richness
+            th Output
+        each val in selectedResults
+            tr
+                td #{val['Planet Name']}
+                td #{val.Constellation}
+                td #{val.Richness}
+                td #{val.Output}

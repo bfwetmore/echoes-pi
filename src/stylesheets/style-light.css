@@ -1,0 +1,47 @@
+body {
+    font-family: 'Kdam Thmor Pro', sans-serif;
+}
+
+header {
+    font-family: 'Kdam Thmor Pro', sans-serif;
+}
+
+select {
+    font-family: 'Kdam Thmor Pro', sans-serif;
+}
+
+h2 {
+    font-family: 'Kdam Thmor Pro', sans-serif;
+}
+
+footer {
+    font-family: 'Arial', sans-serif;
+}
+
+.resultHeader {
+    color: #d55549;
+}
+
+th {
+    color: #d55549;
+}
+
+.cbContainer {
+    margin: 0px 15px 0px 3px;
+    cursor: pointer;
+}
+
+.cbContainer input {
+    cursor: pointer;
+}
+
+.themeButton {
+    font-family: 'Kdam Thmor Pro', sans-serif;
+    position: fixed;
+    right: -30px;
+    transform: rotate(90deg);
+    }
+
+.submit {
+    font-family: 'Kdam Thmor Pro', sans-serif;
+}
