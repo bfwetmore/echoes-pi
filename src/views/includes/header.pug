@@ -17,12 +17,24 @@ header
                     themeStylesheet.href.includes("light") ?
                         themeStylesheet.href = "/static/style_dm.css" :
                         themeStylesheet.href = "/static/style-light.css";
-                        themeStylesheet.href.includes("light") ? themeToggle.innerText = "Dark Mode" :
+                    themeStylesheet.href.includes("light") ? themeToggle.innerText = "Dark Mode" :
                         themeToggle.innerText = "Light Mode";
                     localStorage.setItem("theme", themeStylesheet.href);
                 });
             });
 
-            if (localStorage.getItem("theme") === "dark") {
-                document.body.classList.add("dark");
+            function showTheme() {
+                if (localStorage.getItem("theme") === "dark") {
+                    document.body.classList.add("dark");
+                }
             }
+
+            function showContent() {
+                document.body.style.visibility = 'visible';
+                document.body.style.opacity = 1;
+            }
+
+            window.addEventListener('DOMContentLoaded', function () {
+                showTheme();
+                showContent();
+            });
