@@ -7,6 +7,10 @@ router.get("/", (req, res) => {
   controller.getRegion(res);
 });
 
+router.get("/thankyou", (req, res) => {
+    controller.getThankYou(res);
+});
+
 router.post("/", (req, res) => {
   controller.getConstellations(req, res);
 });
