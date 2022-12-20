@@ -147,6 +147,7 @@ function renderTemplate(res, templateName, templateData) {
 }
 
 module.exports = {
+  getThankYou, 
   getRegion,
   getConstellations,
   getMaterials,

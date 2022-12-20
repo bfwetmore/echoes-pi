@@ -8,7 +8,7 @@ router.get("/", (req, res) => {
 });
 
 router.get("/thankyou", (req, res) => {
-    controller.getThankYou(res);
+  controller.getThankYou(res);
 });
 
 router.post("/", (req, res) => {
