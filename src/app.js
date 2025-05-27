@@ -6,6 +6,7 @@ const app = express();
 app.use(cookieParser());
 app.use(express.json());
 app.use("/static", express.static("./src/stylesheets"));
+app.use(express.static("./src/images"))
 
 app.use(express.urlencoded({ extended: true }));
 app.set("view engine", "pug");
@@ -35,6 +36,6 @@ app.use(
   }
 );
 
-app.listen(process.env.PORT || 3000, () => {
+app.listen(process.env.PORT || 8081, () => {
   console.log("Server has started");
 });

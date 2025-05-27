@@ -13,6 +13,17 @@ function getRegion(res) {
 }
 
 /**
+ * Gets the thankYou template.
+ * @param res
+ */
+function getThankYou(res) {
+    const templateVariables = {
+        regionArray: dataManager.generateRegionList(),
+    };
+    renderTemplate(res, "thankYou", templateVariables);
+}
+
+/**
  * Gets the Constellations based on region selection, to render to the template.
  * @param req
  * @param res
@@ -136,6 +147,7 @@ function renderTemplate(res, templateName, templateData) {
 }
 
 module.exports = {
+  getThankYou, 
   getRegion,
   getConstellations,
   getMaterials,
