@@ -5,7 +5,7 @@
   "main": "./src/app.js",
   "scripts": {
     "test": "jest",
-    "start": "node ./src/app.js"
+    "start": "run ./src/app.js"
 
   },
   "keywords": [],
